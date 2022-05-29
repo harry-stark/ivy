@@ -42,8 +42,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../extensions.html">Extensions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../roadmap.html">Roadmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../building_the_docs.html">Building the Docs</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Functional</span></p>
+<p class="caption" role="heading"><span class="caption-text">Functions</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../functional/ivy/activations.html">Activations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../functional/ivy/compilation.html">Compilation</a></li>
@@ -69,7 +71,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../functional/ivy/statistical.html">Statistical</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../functional/ivy/utility.html">Utility</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Stateful</span></p>
+<p class="caption" role="heading"><span class="caption-text">Classes</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../stateful/activations.html">Activations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../stateful/converters.html">Converters</a></li>
@@ -118,15 +120,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for ivy.functional.ivy.compilation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Collection of general Ivy compilation functions.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of general Ivy compilation functions.&quot;&quot;&quot;</span>
 
 <span class="c1"># global</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span>
 
 <span class="c1"># local</span>
-<span class="kn">from</span> <span class="nn">ivy.framework_handler</span> <span class="kn">import</span> <span class="n">current_framework</span> <span class="k">as</span> <span class="n">_cur_framework</span>
+<span class="kn">from</span> <span class="nn">ivy.backend_handler</span> <span class="kn">import</span> <span class="n">current_backend</span> <span class="k">as</span> <span class="n">_cur_backend</span>
 
 
 <span class="c1"># Extra #</span>
@@ -140,29 +140,31 @@
     <span class="n">static_argnums</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">static_argnames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Provide a function which should be compiled, for faster inference.</span>
-<span class="sd">    The handle to the newly compiled function is returned.</span>
+    <span class="sd">&quot;&quot;&quot;Provide a function which should be compiled, for faster inference. The handle to</span>
+<span class="sd">    the newly compiled function is returned.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    func</span>
 <span class="sd">        Function to be compiled.</span>
 <span class="sd">    dynamic</span>
-<span class="sd">        Whether to compile all conditional branches, regardless of inputs during first invocation.</span>
+<span class="sd">        Whether to compile all conditional branches, regardless of inputs during first</span>
+<span class="sd">        invocation.</span>
 <span class="sd">    example_inputs</span>
 <span class="sd">        Example of inputs to the function to be compiled.</span>
 <span class="sd">        Required for torch in non-dynamic mode, unused by other frameworks.</span>
 <span class="sd">    static_argnums</span>
-<span class="sd">        The argument numbers which should be treated as static for compiling. Default is None.</span>
+<span class="sd">        The argument numbers which should be treated as static for compiling. Default is</span>
+<span class="sd">        None.</span>
 <span class="sd">    static_argnames</span>
-<span class="sd">        The argument names which should be treated as static for compiling. Default is None.</span>
+<span class="sd">        The argument names which should be treated as static for compiling. Default is</span>
+<span class="sd">        None.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">        The handle to the newly compiled function.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_cur_framework</span><span class="p">(</span><span class="n">example_inputs</span><span class="p">)</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">_cur_backend</span><span class="p">(</span><span class="n">example_inputs</span><span class="p">)</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
         <span class="n">func</span><span class="p">,</span> <span class="n">dynamic</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">,</span> <span class="n">static_argnums</span><span class="p">,</span> <span class="n">static_argnames</span>
     <span class="p">)</span></div>
 </pre></div>
